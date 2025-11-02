@@ -20,6 +20,7 @@
 |---------|------------|------------|
 | **Hot Reload** | ✅ Yes | ❌ No |
 | **Auto Restart** | ✅ Yes | ❌ No |
+| **Auto Migrations** | ✅ On Startup | ✅ On Startup |
 | **Build Time** | Fast | Slower |
 | **Performance** | Good | Optimized |
 | **Server** | Django Dev Server | Gunicorn |

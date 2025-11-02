@@ -43,6 +43,7 @@ start_dev_mode() {
     echo "  ✓ Hot-reload for backend (Django)"
     echo "  ✓ Hot-reload for frontend (Next.js)"
     echo "  ✓ Volume mounts for live code changes"
+    echo "  ✓ Auto migrations on startup"
     echo "  ✓ Debug mode enabled"
     echo ""
     
@@ -52,13 +53,8 @@ start_dev_mode() {
     echo -e "${BLUE}Starting containers...${NC}"
     docker-compose -f docker-compose.dev.yml up -d --build
     
-    sleep 5
-    
-    read -p "$(echo -e ${YELLOW}Do you want to run migrations? [y/N]:${NC} )" -n 1 -r
-    echo
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
-        docker-compose -f docker-compose.dev.yml exec backend python manage.py migrate
-    fi
+    echo -e "${BLUE}Waiting for services to be ready...${NC}"
+    sleep 8
     
     echo ""
     echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
@@ -71,6 +67,7 @@ start_dev_mode() {
     echo "  • API Docs:       http://localhost/api/docs/"
     echo ""
     echo -e "${YELLOW}💡 Code changes will auto-reload!${NC}"
+    echo -e "${YELLOW}💡 Migrations run automatically on startup${NC}"
     echo -e "${YELLOW}💡 View logs: docker-compose -f docker-compose.dev.yml logs -f${NC}"
     echo ""
 }
