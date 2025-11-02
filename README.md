@@ -16,93 +16,45 @@ A modern, scalable URL shortening service built with Django, PostgreSQL, Next.js
 - **Rate Limiting**: Protection against abuse
 - **Caching**: Redis-powered caching for optimal performance
 
-## 🏗️ Architecture
+## 🏗️ Tech Stack
 
-### Backend
-- **Django 4.2**: Web framework
-- **Django REST Framework**: API development
-- **PostgreSQL**: Primary database
-- **Redis**: Caching and Celery broker
-- **Celery**: Asynchronous task processing
-- **Celery Beat**: Scheduled task execution
-- **Gunicorn**: WSGI HTTP server
-
-### Frontend
-- **Next.js 14**: React framework
-- **TypeScript**: Type-safe development
-- **TailwindCSS**: Utility-first styling
-- **Axios**: HTTP client
-- **React Hook Form**: Form validation
-- **Recharts**: Data visualization
-- **Lucide React**: Icons
-
-### Infrastructure
-- **Docker**: Containerization
-- **Docker Compose**: Multi-container orchestration
-- **Nginx**: Reverse proxy and load balancer
+**Backend:** Django 4.2, Django REST Framework, PostgreSQL, Redis, Celery, Celery Beat, Gunicorn  
+**Frontend:** Next.js 14, TypeScript, TailwindCSS, React Hook Form, Recharts, Lucide React  
+**Infrastructure:** Docker, Docker Compose, Nginx
 
 ## 📋 Prerequisites
 
-- Docker & Docker Compose
-- Node.js 18+ (for local development)
-- Python 3.11+ (for local development)
+- **Docker & Docker Compose** (required)
+- Node.js 18+ (optional, for local development)
+- Python 3.11+ (optional, for local development)
 
 ## 🚀 Quick Start
 
-### One-Command Setup (Recommended)
+### Automated Setup (Recommended)
 
 ```bash
-./entryPoint.sh
+./bootstrap.sh
 ```
 
-This interactive script will guide you through:
-- ✅ Environment setup (.env file)
-- ✅ Choose Development (hot-reload) or Production mode
-- ✅ Start all services
-- ✅ Run migrations
-- ✅ Create superuser
+The interactive script will:
+- ✅ Create `.env` file if missing
+- ✅ Let you choose Development or Production mode
+- ✅ Start all services (postgres, redis, backend, frontend, nginx, celery)
+- ✅ Run migrations automatically
 
-### Development Mode (Hot-Reload)
-Perfect for coding! Changes auto-reload instantly.
+**Development Mode** - Hot-reload enabled for Django & Next.js  
+**Production Mode** - Optimized builds with Gunicorn
 
-```bash
-./entryPoint.sh
-# Select option 1: 🔥 Development Mode
-```
-
-**Features:**
-- ✓ Django auto-reloads on code changes
-- ✓ Next.js Fast Refresh
-- ✓ No need to restart containers
-- ✓ Live code updates
-
-### Production Mode
-Optimized for deployment.
+### Manual Setup
 
 ```bash
-./entryPoint.sh
-# Select option 2: 🚀 Production Mode
-```
-
-**Features:**
-- ✓ Optimized builds
-- ✓ Gunicorn WSGI server
-- ✓ Static file serving
-- ✓ Production configuration
-
-### Manual Setup (Alternative)
-
-If you prefer manual control:
-
-```bash
-# 1. Create .env file
+# 1. Setup environment
 cp .env.example .env
 
-# 2. Start in development mode
-docker-compose -f docker-compose.dev.yml up -d --build
-
-# OR start in production mode
-docker-compose up -d --build
+# 2. Start services
+docker-compose -f docker-compose.dev.yml up -d --build  # Dev mode
+# OR
+docker-compose up -d --build  # Production mode
 
 # 3. Run migrations
 docker-compose exec backend python manage.py migrate
@@ -111,282 +63,157 @@ docker-compose exec backend python manage.py migrate
 docker-compose exec backend python manage.py createsuperuser
 ```
 
-### Access Your Application
+### Access Points
 
 - **Frontend**: http://localhost/
 - **API**: http://localhost/api/
-- **Admin Panel**: http://localhost/admin/
-- **API Documentation**: http://localhost/api/docs/
+- **Admin**: http://localhost/admin/
+- **API Docs**: http://localhost/api/docs/
 
-## 💻 Local Development
+## 💻 Local Development (Without Docker)
 
-### Backend Setup
+### Backend
 
 ```bash
 cd backend
-
-# Create virtual environment
 python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# Install dependencies
+source venv/bin/activate
 pip install -r requirements.txt
-
-# Run migrations
 python manage.py migrate
-
-# Create superuser
 python manage.py createsuperuser
-
-# Run development server
 python manage.py runserver
-```
 
-### Frontend Setup
-
-```bash
-cd frontend
-
-# Install dependencies
-npm install
-
-# Run development server
-npm run dev
-```
-
-### Start Celery Worker (for background tasks)
-
-```bash
-cd backend
+# In separate terminals:
 celery -A config worker --loglevel=info
-```
-
-### Start Celery Beat (for scheduled tasks)
-
-```bash
-cd backend
 celery -A config beat --loglevel=info
 ```
 
-## 📚 API Documentation
+### Frontend
 
-### Create Short URL
-
-```http
-POST /api/urls/
-Content-Type: application/json
-
-{
-  "original_url": "https://example.com/very-long-url",
-  "custom_code": "mycode",  // Optional
-  "title": "My Website",     // Optional
-  "description": "...",      // Optional
-  "expires_at": "2024-12-31T23:59:59Z"  // Optional
-}
+```bash
+cd frontend
+npm install
+npm run dev
 ```
 
-### Get URL Details
+## 📚 API Overview
 
-```http
-GET /api/urls/{id}/
-```
+Full API documentation available at http://localhost/api/docs/
 
-### Get URL Statistics
-
-```http
-GET /api/urls/{id}/stats/
-```
-
-### List All URLs
-
-```http
-GET /api/urls/?page=1&search=query&order_by=-clicks
-```
-
-### Access Short URL
-
-```http
-GET /{short_code}/
-```
-
-### Get Dashboard Stats
-
-```http
-GET /api/analytics/dashboard/
-```
+**Key Endpoints:**
+- `POST /api/urls/` - Create short URL
+- `GET /api/urls/` - List all URLs
+- `GET /api/urls/{id}/` - URL details
+- `GET /api/urls/{id}/stats/` - URL statistics
+- `GET /{short_code}/` - Redirect to original URL
+- `GET /api/analytics/dashboard/` - Dashboard metrics
 
 ## 🔧 Configuration
 
-### Environment Variables
-
-Key environment variables in `.env`:
+Copy `.env.example` to `.env` and configure:
 
 ```env
 # Django
 DEBUG=False
 SECRET_KEY=your-secret-key
-DJANGO_ALLOWED_HOSTS=yourdomain.com
+DJANGO_ALLOWED_HOSTS=localhost,yourdomain.com
 
 # Database
 POSTGRES_DB=urlshortener
 POSTGRES_USER=postgres
 POSTGRES_PASSWORD=secure_password
-POSTGRES_HOST=postgres
-POSTGRES_PORT=5432
 
-# Redis
-REDIS_URL=redis://redis:6379/0
-
-# URL Shortener
-BASE_URL=https://yourdomain.com
+# URL Settings
+BASE_URL=http://localhost
 SHORT_CODE_LENGTH=6
-ENABLE_CUSTOM_CODES=True
-
-# Analytics
-ANALYTICS_RETENTION_DAYS=90
-
-# Rate Limiting
-RATE_LIMIT_ENABLED=True
-RATE_LIMIT_PER_MINUTE=10
 ```
 
-## 🐳 Docker Commands
+See `.env.example` for all configuration options.
+
+## 🐳 Common Commands
 
 ```bash
-# Start services
-docker-compose up -d
-
-# Stop services
-docker-compose down
-
 # View logs
-docker-compose logs -f
-
-# Restart a service
-docker-compose restart backend
+docker-compose logs -f [service_name]
 
 # Run Django commands
 docker-compose exec backend python manage.py <command>
 
-# Access PostgreSQL
+# Access database
 docker-compose exec postgres psql -U postgres -d urlshortener
 
-# Access Redis CLI
-docker-compose exec redis redis-cli
+# Stop all services
+docker-compose down
 ```
 
-## 📊 Database Schema
+## 📊 Project Structure
 
-### URL Model
-- `id`: Primary key
-- `original_url`: The long URL
-- `short_code`: Unique short identifier
-- `custom_code`: Boolean flag for custom codes
-- `title`, `description`: Optional metadata
-- `clicks`, `unique_clicks`: Analytics counters
-- `is_active`, `expires_at`: Status fields
-- `created_at`, `updated_at`: Timestamps
+```
+.
+├── backend/           # Django REST API
+│   ├── config/        # Django settings
+│   ├── shortener/     # URL shortening app
+│   └── analytics/     # Analytics app
+├── frontend/          # Next.js UI
+│   ├── app/           # Next.js 14 app router
+│   ├── components/    # React components
+│   └── lib/           # Utilities
+├── nginx/             # Nginx configuration
+├── docs/              # Detailed documentation
+│   ├── ARCHITECTURE.md
+│   ├── QUICKSTART.md
+│   ├── SETUP.md
+│   └── TESTING.md
+├── bootstrap.sh       # Setup script
+├── docker-compose.yml
+└── docker-compose.dev.yml
+```
 
-### Click Model
-- Tracks individual clicks with:
-  - IP address
-  - User agent, device type, browser, OS
-  - Referrer URL
-  - Geolocation (country, city)
-  - Session ID for unique visitor tracking
-  - Timestamp
+## 🔒 Key Features
 
-### DailyAnalytics Model
-- Aggregated daily statistics per URL
-- Clicks and unique visitors per day
-- Used for trend analysis
-
-## 🔒 Security Features
-
-- **Rate Limiting**: Prevents abuse
-- **Input Validation**: URL and custom code validation
-- **CORS Configuration**: Controlled cross-origin access
-- **Database Connection Pooling**: Efficient resource usage
-- **Environment-based Configuration**: Secure secret management
-
-## 📈 Performance Optimizations
-
-- **Redis Caching**: Frequently accessed URLs cached
-- **Database Indexing**: Optimized queries on short_code, created_at
-- **Celery Background Tasks**: Async click tracking
-- **Connection Pooling**: Reuse database connections
-- **Static File Serving**: Nginx for efficient asset delivery
+- Rate limiting & input validation
+- Redis caching for performance
+- Celery for async tasks
+- PostgreSQL with optimized indexing
+- Comprehensive test coverage
 
 ## 🧪 Testing
 
 ```bash
-# Backend tests
+# Backend (pytest)
 cd backend
-python manage.py test
+pytest --cov=. --cov-report=html
 
-# Frontend tests
+# Frontend (Jest)
 cd frontend
 npm test
 ```
 
-## 📦 Production Deployment
+See `docs/TESTING.md` for detailed testing documentation.
 
-### Using Docker Compose
+## 📦 Deployment
 
-1. Update `.env` with production values
-2. Set `DEBUG=False`
-3. Configure proper `DJANGO_ALLOWED_HOSTS`
-4. Use strong `SECRET_KEY` and database passwords
-5. Set up SSL/TLS with Let's Encrypt
-6. Configure Nginx for HTTPS
+1. Update `.env` for production:
+   - Set `DEBUG=False`
+   - Use strong `SECRET_KEY`
+   - Configure `DJANGO_ALLOWED_HOSTS`
+   - Set up SSL certificates
 
-```bash
-docker-compose -f docker-compose.yml up -d
-```
+2. Deploy:
+   ```bash
+   docker-compose up -d --build
+   ```
 
-### Manual Deployment
+See `docs/` folder for detailed guides.
 
-Refer to Django and Next.js deployment guides for platforms like:
-- AWS (EC2, ECS, Elastic Beanstalk)
-- Google Cloud Platform
-- Heroku
-- DigitalOcean
-- Vercel (Frontend)
+## 📖 Documentation
 
-## 🛠️ Troubleshooting
-
-### Database Connection Issues
-
-```bash
-# Check PostgreSQL is running
-docker-compose ps postgres
-
-# View PostgreSQL logs
-docker-compose logs postgres
-
-# Restart PostgreSQL
-docker-compose restart postgres
-```
-
-### Celery Not Processing Tasks
-
-```bash
-# Check Celery worker logs
-docker-compose logs celery_worker
-
-# Restart Celery worker
-docker-compose restart celery_worker
-```
-
-### Frontend Build Errors
-
-```bash
-# Clear Next.js cache
-rm -rf frontend/.next
-
-# Rebuild
-docker-compose up --build frontend
-```
+Detailed documentation in the `docs/` folder:
+- **ARCHITECTURE.md** - System architecture & design
+- **QUICKSTART.md** - Quick setup guide
+- **SETUP.md** - Detailed setup instructions
+- **TESTING.md** - Testing strategy & guides
+- **QUICK_REFERENCE.md** - Command reference
 
 ## 📝 License
 
