@@ -107,9 +107,8 @@ services:
     container_name: frontend
     ports:
       - "3000:3000"
-    environment:
-      # Use Nginx URL for client-side API requests (browser)
-      - NEXT_PUBLIC_API_URL=http://localhost
+    env_file:
+      - .env
     depends_on:
       - backend
     networks:
