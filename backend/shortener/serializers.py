@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.conf import settings
+from drf_spectacular.utils import extend_schema_field
 from .models import URL, Click
 import validators
 
@@ -125,10 +126,12 @@ class URLSerializer(serializers.ModelSerializer):
             'updated_at'
         ]
     
+    @extend_schema_field(serializers.CharField)
     def get_short_url(self, obj):
         """Get the full short URL"""
         return obj.get_short_url()
     
+    @extend_schema_field(serializers.CharField(allow_null=True))
     def get_qr_code_url(self, obj):
         """Get QR code URL if available"""
         if obj.qr_code:
@@ -137,6 +140,7 @@ class URLSerializer(serializers.ModelSerializer):
                 return request.build_absolute_uri(obj.qr_code.url)
         return None
     
+    @extend_schema_field(serializers.BooleanField)
     def get_is_expired(self, obj):
         """Check if URL is expired"""
         return obj.is_expired()
@@ -162,9 +166,11 @@ class URLListSerializer(serializers.ModelSerializer):
             'created_at'
         ]
     
+    @extend_schema_field(serializers.CharField)
     def get_short_url(self, obj):
         return obj.get_short_url()
     
+    @extend_schema_field(serializers.BooleanField)
     def get_is_expired(self, obj):
         return obj.is_expired()
 
@@ -199,3 +205,9 @@ class ClickSerializer(serializers.ModelSerializer):
             'clicked_at'
         ]
         read_only_fields = fields
+
+
+class HealthCheckSerializer(serializers.Serializer):
+    """Serializer for health check response"""
+    status = serializers.CharField()
+    timestamp = serializers.CharField()

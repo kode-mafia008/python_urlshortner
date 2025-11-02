@@ -1,14 +1,10 @@
-version: '3.8'
-
 services:
   # PostgreSQL Database
   postgres:
     image: postgres:15-alpine
     container_name: urlshortener_postgres
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB:-urlshortener}
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    env_file:
+      - .env
     ports:
       - "5432:5432"
     volumes:
@@ -25,6 +21,8 @@ services:
   redis:
     image: redis:7-alpine
     container_name: urlshortener_redis
+    env_file:
+      - .env
     ports:
       - "6379:6379"
     volumes:
@@ -42,6 +40,8 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    env_file:
+      - .env
     container_name: urlshortener_backend
     command: >
       sh -c "python manage.py migrate &&
@@ -52,9 +52,7 @@ services:
       - static_volume:/app/staticfiles
       - media_volume:/app/media
     ports:
-      - "8000:8000"
-    env_file:
-      - .env
+      - "8000:8000" 
     depends_on:
       postgres:
         condition: service_healthy
@@ -110,7 +108,8 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:8000
+      # Use Nginx URL for client-side API requests (browser)
+      - NEXT_PUBLIC_API_URL=http://localhost
     depends_on:
       - backend
     networks:

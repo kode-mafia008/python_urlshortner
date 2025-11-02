@@ -20,7 +20,8 @@ from .serializers import (
     URLSerializer,
     URLListSerializer,
     URLStatsSerializer,
-    ClickSerializer
+    ClickSerializer,
+    HealthCheckSerializer
 )
 from .tasks import track_click_async, generate_qr_code_async
 
@@ -288,6 +289,7 @@ class RedirectView(View):
 
 class HealthCheckView(generics.GenericAPIView):
     """Health check endpoint"""
+    serializer_class = HealthCheckSerializer
     
     def get(self, request):
         """Return service health status"""

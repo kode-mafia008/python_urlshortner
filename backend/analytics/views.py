@@ -3,13 +3,20 @@ from rest_framework.response import Response
 from django.db.models import Sum, Count
 from django.utils import timezone
 from datetime import timedelta
+from drf_spectacular.utils import extend_schema
 from shortener.models import URL, Click
 from .models import DailyAnalytics
+from .serializers import DashboardStatsSerializer, TrendsSerializer
 
 
 class DashboardStatsView(generics.GenericAPIView):
     """Get overall dashboard statistics"""
+    serializer_class = DashboardStatsSerializer
     
+    @extend_schema(
+        responses={200: DashboardStatsSerializer},
+        description="Get dashboard statistics including total URLs, clicks, and top URLs"
+    )
     def get(self, request):
         # Total URLs
         total_urls = URL.objects.filter(is_active=True).count()
@@ -58,7 +65,12 @@ class DashboardStatsView(generics.GenericAPIView):
 
 class TrendsView(generics.GenericAPIView):
     """Get click trends over time"""
+    serializer_class = TrendsSerializer
     
+    @extend_schema(
+        responses={200: TrendsSerializer},
+        description="Get click trends over a specified time period"
+    )
     def get(self, request):
         days = int(request.query_params.get('days', 30))
         start_date = timezone.now().date() - timedelta(days=days)

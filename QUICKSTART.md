@@ -55,19 +55,23 @@ docker-compose exec backend python manage.py createsuperuser
 
 ### 4. Access Your Application
 
-🎉 **Done!** Your URL shortener is now running:
+🎉 **Done!** Your URL shortener is now running through Nginx:
 
-- **Frontend (User Interface)**: http://localhost:3000
-- **Backend API**: http://localhost:8000/api/
-- **Admin Panel**: http://localhost:8000/admin/
-- **API Documentation**: http://localhost:8000/api/docs/
-- **Alternative API Docs**: http://localhost:8000/api/redoc/
+- **Frontend (User Interface)**: http://localhost/
+- **Backend API**: http://localhost/api/
+- **Admin Panel**: http://localhost/admin/
+- **API Documentation**: http://localhost/api/docs/
+- **Alternative API Docs**: http://localhost/api/redoc/
+
+**Note**: All services are accessible through Nginx on port 80. You can also access them directly:
+- Frontend direct: http://localhost:3000
+- Backend direct: http://localhost:8000
 
 ## Testing the Application
 
 ### Create Your First Short URL
 
-1. Open http://localhost:3000
+1. Open http://localhost/ (or http://localhost:3000)
 2. Enter a long URL (e.g., `https://www.example.com/very/long/url`)
 3. Click "Shorten URL"
 4. Copy your short URL and test it!
@@ -75,8 +79,8 @@ docker-compose exec backend python manage.py createsuperuser
 ### Using the API
 
 ```bash
-# Create a short URL
-curl -X POST http://localhost:8000/api/urls/ \
+# Create a short URL (through Nginx)
+curl -X POST http://localhost/api/urls/ \
   -H "Content-Type: application/json" \
   -d '{
     "original_url": "https://www.example.com/very/long/url",
@@ -88,25 +92,27 @@ curl -X POST http://localhost:8000/api/urls/ \
 #   "id": 1,
 #   "original_url": "https://www.example.com/very/long/url",
 #   "short_code": "abc123",
-#   "short_url": "http://localhost:8000/abc123",
+#   "short_url": "http://localhost/abc123",
 #   "clicks": 0,
 #   ...
 # }
 
-# Access the short URL
-curl -L http://localhost:8000/abc123
+# Access the short URL (redirects to original URL)
+curl -L http://localhost/abc123
 ```
 
 ### Custom Short Codes
 
 ```bash
-curl -X POST http://localhost:8000/api/urls/ \
+curl -X POST http://localhost/api/urls/ \
   -H "Content-Type: application/json" \
   -d '{
     "original_url": "https://www.example.com",
     "custom_code": "mycode",
     "title": "My Custom Link"
   }'
+
+# Then access it at: http://localhost/mycode
 ```
 
 ## Verify Everything is Working
@@ -187,11 +193,12 @@ docker-compose down -v
 
 ## Next Steps
 
-1. **Explore the Admin Panel**: http://localhost:8000/admin/
-2. **Check API Documentation**: http://localhost:8000/api/docs/
+1. **Explore the Admin Panel**: http://localhost/admin/
+2. **Check API Documentation**: http://localhost/api/docs/
 3. **Create More URLs**: Try custom codes, titles, and expiration dates
 4. **View Analytics**: Go to Analytics tab to see statistics
 5. **Generate QR Codes**: Each URL automatically gets a QR code
+6. **Test Short URLs**: Create a URL and access it at http://localhost/{your_code}
 
 ## Production Deployment
 
