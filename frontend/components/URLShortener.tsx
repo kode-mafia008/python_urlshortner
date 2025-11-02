@@ -65,7 +65,7 @@ export default function URLShortener() {
                   message: 'Please enter a valid URL',
                 },
               })}
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
               placeholder="https://example.com/very-long-url"
             />
           </div>
@@ -89,7 +89,7 @@ export default function URLShortener() {
                 message: 'Only letters and numbers allowed',
               },
             })}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
             placeholder="my-custom-code"
           />
           {errors.custom_code && (
@@ -105,7 +105,7 @@ export default function URLShortener() {
           <input
             type="text"
             {...register('title')}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
             placeholder="My Website"
           />
         </div>
@@ -132,7 +132,7 @@ export default function URLShortener() {
               type="text"
               value={shortenedURL.short_url}
               readOnly
-              className="flex-1 px-4 py-3 bg-white border border-gray-300 rounded-lg"
+              className="flex-1 px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900"
             />
             <button
               onClick={copyToClipboard}

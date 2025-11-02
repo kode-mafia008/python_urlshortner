@@ -19,7 +19,7 @@ export default function Dashboard() {
       const data = await analyticsService.getDashboardStats()
       setStats(data)
     } catch (error) {
-      toast.error('Failed to fetch analytics')
+      toast.error(`Failed to fetch analytics ${error}`)
     } finally {
       setLoading(false)
     }

@@ -49,62 +49,74 @@ A modern, scalable URL shortening service built with Django, PostgreSQL, Next.js
 
 ## 🚀 Quick Start
 
-### 1. Clone the Repository
+### One-Command Setup (Recommended)
 
 ```bash
-cd python_urlshortner
+./entryPoint.sh
 ```
 
-### 2. Configure Environment
+This interactive script will guide you through:
+- ✅ Environment setup (.env file)
+- ✅ Choose Development (hot-reload) or Production mode
+- ✅ Start all services
+- ✅ Run migrations
+- ✅ Create superuser
 
-Copy the example environment file and update as needed:
+### Development Mode (Hot-Reload)
+Perfect for coding! Changes auto-reload instantly.
 
 ```bash
+./entryPoint.sh
+# Select option 1: 🔥 Development Mode
+```
+
+**Features:**
+- ✓ Django auto-reloads on code changes
+- ✓ Next.js Fast Refresh
+- ✓ No need to restart containers
+- ✓ Live code updates
+
+### Production Mode
+Optimized for deployment.
+
+```bash
+./entryPoint.sh
+# Select option 2: 🚀 Production Mode
+```
+
+**Features:**
+- ✓ Optimized builds
+- ✓ Gunicorn WSGI server
+- ✓ Static file serving
+- ✓ Production configuration
+
+### Manual Setup (Alternative)
+
+If you prefer manual control:
+
+```bash
+# 1. Create .env file
 cp .env.example .env
-```
 
-Update the following variables in `.env`:
-- `SECRET_KEY`: Generate a secure secret key
-- `POSTGRES_PASSWORD`: Set a strong database password
-- Database credentials if using external PostgreSQL
+# 2. Start in development mode
+docker-compose -f docker-compose.dev.yml up -d --build
 
-### 3. Start with Docker Compose
+# OR start in production mode
+docker-compose up -d --build
 
-```bash
-# Build and start all services
-docker-compose up --build
-
-# Run in detached mode
-docker-compose up -d
-```
-
-This will start:
-- **PostgreSQL** on port 5432
-- **Redis** on port 6379
-- **Django backend** on port 8000
-- **Celery worker** (background)
-- **Celery beat** (scheduler)
-- **Next.js frontend** on port 3000
-- **Nginx** on port 80
-
-### 4. Run Database Migrations
-
-```bash
+# 3. Run migrations
 docker-compose exec backend python manage.py migrate
-```
 
-### 5. Create Admin User
-
-```bash
+# 4. Create admin user
 docker-compose exec backend python manage.py createsuperuser
 ```
 
-### 6. Access the Application
+### Access Your Application
 
-- **Frontend**: http://localhost:3000
-- **API**: http://localhost:8000/api/
-- **Admin Panel**: http://localhost:8000/admin/
-- **API Documentation**: http://localhost:8000/api/docs/
+- **Frontend**: http://localhost/
+- **API**: http://localhost/api/
+- **Admin Panel**: http://localhost/admin/
+- **API Documentation**: http://localhost/api/docs/
 
 ## 💻 Local Development
 

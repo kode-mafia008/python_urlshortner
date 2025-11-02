@@ -35,18 +35,14 @@ services:
     networks:
       - urlshortner_network
 
-  # Django Backend
+  # Django Backend (Development with hot-reload)
   backend:
     build:
       context: ./backend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     env_file:
       - .env
     container_name: backend
-    command: >
-      sh -c "python manage.py migrate &&
-             python manage.py collectstatic --noinput &&
-             gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 4 --threads 2"
     volumes:
       - ./backend:/app
       - static_volume:/app/staticfiles
@@ -60,12 +56,14 @@ services:
         condition: service_healthy
     networks:
       - urlshortner_network
+    environment:
+      - PYTHONUNBUFFERED=1
 
   # Celery Worker
   celery_worker:
     build:
       context: ./backend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     container_name: celery_worker
     command: celery -A config worker --loglevel=info --concurrency=4
     volumes:
@@ -84,7 +82,7 @@ services:
   celery_beat:
     build:
       context: ./backend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     container_name: celery_beat
     command: celery -A config beat --loglevel=info --scheduler django_celery_beat.schedulers:DatabaseScheduler
     volumes:
@@ -99,11 +97,11 @@ services:
     networks:
       - urlshortner_network
 
-  # Next.js Frontend
+  # Next.js Frontend (Development with hot-reload)
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     container_name: frontend
     ports:
       - "3000:3000"
@@ -119,7 +117,7 @@ services:
       - /app/node_modules
       - /app/.next
 
-  # Nginx (Optional - for production)
+  # Nginx
   nginx:
     image: nginx:alpine
     container_name: nginx
@@ -143,4 +141,3 @@ volumes:
 
 networks:
   urlshortner_network:
-    driver: bridge
