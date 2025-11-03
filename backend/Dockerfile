@@ -30,12 +30,5 @@ RUN mkdir -p /app/staticfiles /app/media
 # Expose port
 EXPOSE 8000
 
-# Run migrations
-RUN python manage.py makemigrations
-RUN python manage.py migrate
-
-# Collect static files
-RUN python manage.py collectstatic --noinput
-
-# Run gunicorn
-CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8000"]
+# Run gunicorn (migrations handled by docker-compose command)
+CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "4", "--threads", "2"]
